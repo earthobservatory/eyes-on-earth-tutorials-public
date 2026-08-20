@@ -1,0 +1,49 @@
+{
+  // ES4304 — Eyes on Earth
+  //
+  // Opening this repo in a GitHub Codespace gives every student the same
+  // pre-built environment with the repository already present. No clone cell,
+  // no pip install cell, no "it worked yesterday" — the setup cells in the
+  // notebooks become no-ops because everything already imports.
+  //
+  // See 0.1_Setup_and_Environment/README.md for how to launch one.
+
+  "name": "ES4304 — Eyes on Earth",
+
+  "build": {
+    "dockerfile": "Dockerfile",
+    // Build from the repo root so the Dockerfile can COPY environment.yml.
+    "context": ".."
+  },
+
+  // 16 GB gives the Himawari full-disc grids (6001 x 6001) headroom to spare,
+  // so a stray `.plot()` on a full-resolution array costs a slow cell rather
+  // than a dead kernel. Note that the smallest Codespaces machine with 16 GB
+  // is the 4-core one, so this doubles the monthly core-hour burn: 4 core-hours
+  // per wall-clock hour, still billing while idle.
+  "hostRequirements": {
+    "cpus": 2,
+    "memory": "16gb",
+    "storage": "32gb"
+  },
+
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "ms-toolsai.jupyter-renderers"
+      ],
+      "settings": {
+        "python.defaultInterpreterPath": "/opt/conda/bin/python",
+        "jupyter.notebookFileRoot": "${fileDirname}"
+      }
+    }
+  },
+
+  // Fails the build loudly if the environment is wrong, rather than letting a
+  // student discover it halfway through a notebook.
+  "postCreateCommand": "python -c \"import xarray, rioxarray, rasterio, cartopy, netCDF4, h5netcdf, scipy, skimage, earthaccess; print('ES4304 environment OK')\"",
+
+  "remoteUser": "vscode"
+}

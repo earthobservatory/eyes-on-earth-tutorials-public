@@ -1,0 +1,71 @@
+# --- Course data -----------------------------------------------------------
+# Satellite data does not belong in the repository. Students download it into
+# their own session; instructors host large provided files on Drive or as a
+# release attachment.
+*/data/*
+!*/data/.gitkeep
+!*/data/README.md
+
+# Data formats, wherever they end up
+*.nc
+*.nc4
+*.h5
+*.hdf
+*.hdf5
+*.tif
+*.tiff
+*.mat
+*.zip
+
+# --- Notebooks -------------------------------------------------------------
+.ipynb_checkpoints/
+*/.ipynb_checkpoints/*
+
+# --- Python ----------------------------------------------------------------
+__pycache__/
+*.py[cod]
+.venv/
+venv/
+env/
+*.egg-info/
+
+# --- Credentials -----------------------------------------------------------
+# Never commit these. See CONTRIBUTING.md.
+.netrc
+.env
+*credentials*
+*secret*
+
+# --- OS and editors --------------------------------------------------------
+.DS_Store
+._*
+.Spotlight-V100
+.Trashes
+Thumbs.db
+desktop.ini
+.vscode/
+.idea/
+
+# --- Working scratch -------------------------------------------------------
+output/
+scratch/
+*.log
+
+# --- Original unstructured source material ------------------------------
+# Superseded by the numbered module folders. Kept on disk as a safety copy
+# until you are happy with the conversion, then delete it. Not committed:
+# it is a 64 MB duplicate of 2.0_Tutorial_2_Overview_and_Assignment/.
+materials/
+
+# --- Handout source files ------------------------------------------------
+# The .docx/.pdf handouts and their oversized exported PNGs are not committed:
+# the text lives in each module README, and the figures were re-extracted from
+# the .docx at sensible sizes into the relevant module Figs/. Originals stay on
+# disk here and in materials/, and are distributed to students via NTULearn.
+*.docx
+*.pptx
+ES4304_*.pdf
+# Unanchored (no leading path) so these match at any depth. The originals of
+# these are the oversized Word exports, superseded by the re-extracted figures.
+OB_*.png
+canva.png

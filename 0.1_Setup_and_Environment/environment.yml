@@ -1,0 +1,69 @@
+# ES4304 — course environment.
+#
+# This builds the Codespaces image (see .devcontainer/), and is also how you
+# run the notebooks on your own machine - mainly for instructors testing a
+# tutorial before a session.
+#
+#   conda env create -f 0.1_Setup_and_Environment/environment.yml
+#   conda activate eyes-on-earth
+#   jupyter lab
+#
+# Cartopy, rasterio and netCDF4 wrap compiled GEOS/PROJ/GDAL/HDF5 libraries.
+# conda-forge ships those as binaries, which is why conda is the supported
+# route rather than pip.
+
+name: eyes-on-earth
+
+channels:
+  - conda-forge
+  # Exclude the Anaconda "defaults" channel. The base image has it configured,
+  # and without this line conda solves against both. Staying on conda-forge
+  # keeps the solve consistent and avoids the Anaconda Terms of Service, which
+  # require a paid licence for larger organisations.
+  - nodefaults
+
+dependencies:
+  # A floor, not an exact pin. earthaccess 0.16 (see below) requires 3.11, and
+  # without this line conda quietly solves back to an ancient earthaccess on an
+  # older base image instead of saying so. Deliberately not pinned to an exact
+  # minor version: that would make conda replace most of the base environment,
+  # a much slower build for no benefit.
+  - python>=3.11
+
+  # Core scientific stack
+  - numpy>=1.26
+  - pandas>=2.0
+  # matplotlib-base, NOT matplotlib: the latter additionally pulls in PyQt and
+  # Qt6 (several hundred MB) for GUI backends that a headless container can
+  # never use. Inline plotting in Jupyter is identical.
+  - matplotlib-base>=3.8
+  - scipy>=1.11
+
+  # NetCDF / HDF5 reading (PACE, Himawari, OSCAR, v7.3 .mat files)
+  - xarray>=2024.3
+  - netcdf4>=1.6
+  - h5netcdf>=1.3
+  - h5py>=3.10
+
+  # Raster IO and GeoTIFF export
+  - rasterio>=1.3
+  - rioxarray>=0.15
+
+  # Resampling bands onto a common grid. Tutorial 1.1 downsamples the 10 m
+  # Sentinel-2 B04 to the 20 m grid with skimage.transform.resize before
+  # compositing it against B11 and B12.
+  - scikit-image>=0.22
+
+  # Map projections, coastlines, gridlines
+  - cartopy>=0.23
+
+  # Data access
+  - requests>=2.31
+  # 0.16 made an explicitly named login strategy strict. Before that,
+  # strategy="netrc" could still fall through to the interactive prompt that
+  # hangs a notebook cell when no .netrc exists.
+  - earthaccess>=0.16
+
+  # Running the notebooks locally
+  - jupyterlab>=4.0
+  - ipykernel
