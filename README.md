@@ -27,6 +27,7 @@ The setup cell at the top of each tutorial notebook checks what is importable an
 |---|---|
 | [0.1_Setup_and_Environment](0.1_Setup_and_Environment/) | Environment setup and check — **run this first** |
 | [0.2_Data_Access_Accounts](0.2_Data_Access_Accounts/) | NASA Earthdata and JAXA P-Tree registration — **do this early**, one takes days to approve |
+| [0.3_Optional_Intro_to_Python](0.3_Optional_Intro_to_Python/) | Basic notebook introducing Python for doing scientific work **optional** |
 
 ### 1. Tutorial 1
 
