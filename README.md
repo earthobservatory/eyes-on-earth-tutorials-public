@@ -79,4 +79,4 @@ See [CONTRIBUTING.md](CONTRIBUTING.md) for the module template and conventions t
 
 ## Licence
 
-[MIT](LICENSE). Reuse and adapt these materials freely, with attribution.
+[GNU GENERAL PUBLIC LICENSE Version 3](LICENSE).
