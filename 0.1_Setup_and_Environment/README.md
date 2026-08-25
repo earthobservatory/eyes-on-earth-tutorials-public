@@ -8,7 +8,7 @@ It confirms that everything imports, draws a test map, and proves the NetCDF →
 
 ## The setup cell
 
-**In `0.1.1`** the setup cell reads the package list straight out of [`environment.yml`](environment.yml), imports each one, and reports. If anything is missing or broken, the repair cell underneath it runs `conda env update` against that same file, into whatever environment the kernel is using — the codespace's `base` or a local `eyes-on-earth`. No container rebuild, and the same cell works either way.
+**In `0.1.1`** the setup cell reads the package list straight out of [`environment.yml`](environment.yml), imports each one, and reports. If anything is missing or broken, the repair cell underneath it `conda install`s just those packages, at the versions and from the channels that same file names, into whatever environment the kernel is using — the codespace's `base` or a local `eyes-on-earth`. No container rebuild, and the same cell works either way.
 
 **In every tutorial notebook** the setup cell is a short `REQUIRED` dict of just the packages that notebook needs, which pip-installs anything missing. That is a mid-course safety net: better than an `ImportError` in front of a class.
 
@@ -47,6 +47,8 @@ jupyter lab
 ```
 
 Then open any `X.Y.Z_*.ipynb` and run it.
+
+**On Windows**, run those three commands in the **Anaconda Prompt** (or Miniforge Prompt) rather than PowerShell or `cmd` — `conda activate` only works in a shell conda has initialised, and the Anaconda Prompt is initialised for you. Everything after that is identical: the notebooks are plain Python and build every path with `pathlib`/`os.path`, so nothing in them is Unix-only.
 
 Pip into a venv can work, but expect to fight the geospatial wheels on some platforms — `environment.yml` is the supported route.
 

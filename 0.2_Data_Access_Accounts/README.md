@@ -13,16 +13,25 @@ Work through [0.2.1_Account_Check.ipynb](0.2.1_Account_Check.ipynb), which sets 
 
 Both providers want a username and password. You save them once in a **`.netrc`** file in your home directory, and every notebook in the course reads them from there — so you type them once, at the start of the course, and never again.
 
-`.netrc` is a standard Unix file, one line per machine:
+`.netrc` is a plain text file, one line per machine:
 
 ```
 machine urs.earthdata.nasa.gov login myUsername password myPassword
 machine ftp.ptree.jaxa.jp login myEmail_example.com password myPtreePassword
 ```
 
-[0.2.1_Account_Check.ipynb](0.2.1_Account_Check.ipynb) writes it for you, sets the permissions, and then verifies both logins.
+[0.2.1_Account_Check.ipynb](0.2.1_Account_Check.ipynb) writes it for you, sets the permissions, and then verifies both logins. It writes it in Python, via `Path.home() / ".netrc"`, so the same cells work in a Codespace, on macOS and on Windows — there is no shell command and no path to type.
 
-It lives in `$HOME`, which is **outside this repository**, so it is never committed. It survives kernel restarts, and in a Codespace it survives stopping and starting. Delete the codespace and create a new one, though, and it goes with it — run 0.2.1 again.
+It lives in your home directory, which is **outside this repository**, so it is never committed:
+
+| Where you are running | The file |
+|---|---|
+| Codespace, Linux, macOS | `~/.netrc` |
+| Windows | `C:\Users\you\.netrc` |
+
+The permissions are set to `600` — readable by you and nobody else — on Linux and macOS. Windows has no equivalent bits, and Python's `netrc` module only checks them on Linux and macOS, so there is nothing to do there.
+
+It survives kernel restarts, and in a Codespace it survives stopping and starting. Delete the codespace and create a new one, though, and it goes with it — run 0.2.1 again.
 
 ## NASA Earthdata
 

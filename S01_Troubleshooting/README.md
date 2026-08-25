@@ -10,6 +10,20 @@ The setup cell did not finish, or you skipped it. Re-run it and watch for a red 
 
 In `0.1.1` the setup cell reports `MISSING` or `BROKEN` against `environment.yml`, and the repair cell below it installs what is named, in place. Run that rather than pip installing by hand. If the repair cell itself fails, send its output to your instructor — a solve conflict or a permissions error needs fixing at the environment level.
 
+**The course repository has been updated and you already have work in it.**
+
+Run the update script from a terminal in the repository:
+
+```bash
+python scripts/update.py
+```
+
+It commits your work, merges the course's changes, and — the part to read — prints any file where your edits and the course's touched the same lines, because there your version is kept and the update is *not* applied. It never leaves conflict markers in a notebook. Running a notebook does not count as an edit for this purpose: outputs and code merge independently, so you still get the fix.
+
+It also puts back any course file that has gone missing from your folder — a whole module you deleted, or dragged to the bin by accident, comes back with the course's current version. Your own files are untouched, and `data/` is gitignored, so nothing you downloaded is disturbed.
+
+It stops if your real credentials are still typed into `0.2.1` — the commit it makes would record them in your clone's history. Run section 4 of that notebook first.
+
 **Your files end up somewhere unexpected.**
 
 Every notebook writes to `os.getcwd()/data/`. Section 2 of the [setup notebook](../0.1_Setup_and_Environment/) prints the working directory — if it is not the folder the notebook lives in, that is why. In JupyterLab, open notebooks through the file browser rather than by path.
@@ -32,11 +46,35 @@ Prebuilds are not enabled, so the conda environment is being solved from scratch
 
 The environment is baked into the image at build time, so a running codespace does not see the edit. *Command Palette → Codespaces: Rebuild Container* is what updates the image for codespaces created afterwards.
 
-To pick the change up in the codespace you are already in — and without waiting on a rebuild — run the repair cell in [0.1.1](../0.1_Setup_and_Environment/0.1.1_Setup_and_Check.ipynb). It runs `conda env update` against `environment.yml` into the environment you are running in. Do both: the repair cell fixes your session, the rebuild fixes everyone else's.
+To pick the change up in the codespace you are already in — and without waiting on a rebuild — run the repair cell in [0.1.1](../0.1_Setup_and_Environment/0.1.1_Setup_and_Check.ipynb). It `conda install`s whatever is missing, from `environment.yml`, into the environment you are running in. Do both: the repair cell fixes your session, the rebuild fixes everyone else's.
 
 **You are being billed for codespaces you are not using.**
 
 Stopping a codespace ends compute billing, but **storage keeps billing until you delete it**. Review them at <https://github.com/codespaces> and delete the ones you have finished with. Shortening the idle timeout in <https://github.com/settings/codespaces> stops a forgotten browser tab from burning hours.
+
+## Windows
+
+The notebooks themselves are cross-platform — every path is built with `pathlib` or `os.path`, and nothing shells out — so these are environment problems rather than notebook ones.
+
+**`conda activate` says the shell is not initialised.**
+
+Use the **Anaconda Prompt** (or Miniforge Prompt) from the Start menu rather than PowerShell or `cmd`. It is the same conda, in a shell that has been initialised for it. `conda init powershell` is the alternative, and needs a new window afterwards.
+
+**Unzipping a Sentinel-2 `.SAFE` folder fails with "path too long".**
+
+`.SAFE` folders nest deeply and their filenames are long, so the full path to a band file can pass the old 260-character limit. Move the repository somewhere short — `C:\ES4304\` rather than a deep folder under Documents or OneDrive — or turn on *Settings → System → For developers → Enable Win32 long paths*.
+
+**OneDrive-backed folders behave oddly.**
+
+Files that OneDrive has made "online-only" are not on the disk, and rasterio or xarray opening one gets an error rather than data. Keep the repository outside your OneDrive folder, or mark the folder *Always keep on this device*.
+
+**`PermissionError` when a cell deletes or overwrites a file.**
+
+Windows will not remove a file that something still has open, and `xr.open_dataset`/`open_dataarray` hold the handle until closed. Close it first — `ds.close()`, or open it in a `with` block — then delete.
+
+**Where is `~/.netrc`?**
+
+`C:\Users\you\.netrc`. [0.2.1](../0.2_Data_Access_Accounts/0.2.1_Account_Check.ipynb) writes it there for you; you do not need to create it in Explorer, which makes leading-dot filenames awkward.
 
 ## Data access
 
@@ -54,9 +92,7 @@ The usual cause is a **new codespace** — the file lives in your home directory
 
 **`LoginAttemptFailure` from `earthaccess.login()`.**
 
-Earthdata rejected the username or password in your `.netrc`. Confirm them by logging in at <https://urs.earthdata.nasa.gov>, then re-run the write cell in 0.2.1.
-
-Watch the redirection operators when you do: the Earthdata cell uses `>`, which **rewrites the whole file**, so run the JAXA cell (`>>`, which appends) again afterwards or you will lose that line.
+Earthdata rejected the username or password in your `.netrc`. Confirm them by logging in at <https://urs.earthdata.nasa.gov>, then re-run the write cell in 0.2.1. Each write cell replaces only its own provider's line, so the JAXA line survives — there is nothing to run twice.
 
 **JAXA: `TypeError: cannot unpack non-sequence NoneType`.**
 
@@ -64,7 +100,7 @@ Watch the redirection operators when you do: the Earthdata cell uses `>`, which 
 
 **A password containing a double quote.**
 
-The write cells wrap the line in double quotes, so a `"` in your password breaks the shell command and produces a malformed file. Either change the password, or write the `.netrc` line by hand in a terminal.
+The write cells pass it as a double-quoted Python string, so a `"` in your password ends the string early and the cell raises `SyntaxError`. Wrap that one argument in single quotes instead: `'my"password'`.
 
 **`earthaccess.search_data()` returns 0 granules.**
 
