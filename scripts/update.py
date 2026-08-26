@@ -40,7 +40,8 @@ ACCOUNT_NB = Path("0.2_Data_Access_Accounts/0.2.1_Account_Check.ipynb")
 # What the write cells in 0.2.1 look like before anyone types real credentials
 # into them. Section 4 of that notebook puts these back.
 PLACEHOLDERS = {"myUsername", "myPassword",
-                "myEmail_example.com", "myPtreePassword"}
+                "myEmail_example.com", "myPtreePassword",
+                "myEmail@example.com", "myCopernicusPassword"}
 
 
 def git(*args, check=True):
@@ -62,9 +63,10 @@ def repo_root():
 def credentials_are_typed_in(root):
     """True if 0.2.1 currently holds something other than the placeholders.
 
-    Step 1 commits your working tree as it stands. If your Earthdata or P-Tree
-    password is still sitting in a code cell, that commit records it in this
-    clone's history, where deleting the line afterwards does not remove it.
+    Step 1 commits your working tree as it stands. If an Earthdata, P-Tree or
+    Copernicus password is still sitting in a code cell, that commit records it
+    in this clone's history, where deleting the line afterwards does not remove
+    it.
     """
     path = root / ACCOUNT_NB
     if not path.exists():                     # renamed or removed - not our
@@ -76,9 +78,13 @@ def credentials_are_typed_in(root):
             if not line.lstrip().startswith("save_credentials("):
                 continue
             # "save_credentials("host", "login", "password")" -> the arguments
+            try:
+                inside = line[line.index("(") + 1: line.rindex(")")]
+            except ValueError:
+                return True         # a call split over lines, or half typed:
+                                    # unreadable, so assume the worst
             arguments = [part.strip().strip('"\'')
-                         for part in line[line.index("(") + 1:
-                                          line.rindex(")")].split(",")]
+                         for part in inside.split(",")]
             if any(argument not in PLACEHOLDERS for argument in arguments[1:]):
                 return True
     return False
@@ -100,22 +106,28 @@ def yours_would_win(root, base, remote_branch, paths):
     with tempfile.TemporaryDirectory() as tmp:
         tmp = Path(tmp)
         for path in paths:
-            versions = {}
+            blobs = {}
             for name, revision in (("base", base), ("ours", "HEAD"),
                                    ("theirs", remote_branch)):
                 blob = subprocess.run(["git", "show", f"{revision}:{path}"],
                                       capture_output=True, cwd=root)
-                if blob.returncode != 0:
-                    # Missing on one side: added or deleted there. git cannot
-                    # merge that silently, so it always needs your attention.
-                    versions = None
-                    break
-                versions[name] = tmp / name
-                versions[name].write_bytes(blob.stdout)
+                blobs[name] = blob.stdout if blob.returncode == 0 else None
 
-            if versions is None:
+            if blobs["ours"] is not None and blobs["ours"] == blobs["theirs"]:
+                continue          # the same file on both sides - a module just
+                                  # restored from the course, typically. There
+                                  # is nothing of theirs left to displace.
+
+            if any(blob is None for blob in blobs.values()):
+                # Missing on one side: added or deleted there. git cannot merge
+                # that silently, so it always needs your attention.
                 losers.append(path)
                 continue
+
+            versions = {}
+            for name, content in blobs.items():
+                versions[name] = tmp / name
+                versions[name].write_bytes(content)
 
             merged = subprocess.run(
                 ["git", "merge-file", "-p",

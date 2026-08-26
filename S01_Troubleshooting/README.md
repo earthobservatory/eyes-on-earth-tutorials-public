@@ -92,11 +92,23 @@ The usual cause is a **new codespace** — the file lives in your home directory
 
 **`LoginAttemptFailure` from `earthaccess.login()`.**
 
-Earthdata rejected the username or password in your `.netrc`. Confirm them by logging in at <https://urs.earthdata.nasa.gov>, then re-run the write cell in 0.2.1. Each write cell replaces only its own provider's line, so the JAXA line survives — there is nothing to run twice.
+Earthdata rejected the username or password in your `.netrc`. Confirm them by logging in at <https://urs.earthdata.nasa.gov>, then re-run the write cell in 0.2.1. Each write cell replaces only its own provider's line, so the JAXA and Copernicus lines survive — there is nothing to run twice.
 
 **JAXA: `TypeError: cannot unpack non-sequence NoneType`.**
 
 `netrc.authenticators("ftp.ptree.jaxa.jp")` returned `None` — there is no P-Tree line in your `.netrc`. Run the JAXA write cell in 0.2.1.
+
+**Copernicus: `401 Unauthorized` from the token request.**
+
+The Copernicus Data Space rejected the email address or password in your `.netrc`. Confirm them by logging in at <https://dataspace.copernicus.eu/>, then re-run the Copernicus write cell in 0.2.1. If the account has two-factor authentication turned on, the request also needs a `totp` field holding the current six-digit code from your authenticator app — there is a commented-out line for it in the check cell of 0.2.1.
+
+**Copernicus: `401 Unauthorized` on the download, with a token that just worked.**
+
+The download host is `download.dataspace.copernicus.eu` (`zipper.…` is an older name for it). Asking `catalogue.dataspace.copernicus.eu` for the file redirects there, and `requests` drops the `Authorization` header when a redirect crosses hostnames, so the token never arrives. Request the download host directly.
+
+**`ValueError: .netrc cannot hold this password`.**
+
+The file format cannot store a password with a space in it, loses a backslash silently, and manages accented characters only on newer Pythons. `save_credentials()` reads back what it wrote, so it catches this at the point you run the cell rather than three notebooks later; nothing is saved and the rest of your `.netrc` is untouched. Change the password at the provider to one made of ordinary characters.
 
 **A password containing a double quote.**
 

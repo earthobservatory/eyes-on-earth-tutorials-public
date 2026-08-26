@@ -48,6 +48,12 @@ dependencies:
   # Raster IO and GeoTIFF export
   - rasterio>=1.3
   - rioxarray>=0.15
+  # Sentinel-2 ships every band as a JPEG 2000 .jp2, and conda-forge now
+  # packages GDAL's optional drivers separately from libgdal-core. Without
+  # this line rasterio installs cleanly and then fails on the first band with
+  # "not recognized as being in a supported file format ... plugin
+  # gdal_JP2OpenJPEG.so is not available". Tutorials 1.1 and 1.2 need it.
+  - libgdal-jp2openjpeg
 
   # Resampling bands onto a common grid. Tutorial 1.1 downsamples the 10 m
   # Sentinel-2 B04 to the 20 m grid with skimage.transform.resize before
