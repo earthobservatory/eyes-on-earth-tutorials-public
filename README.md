@@ -1,6 +1,6 @@
 # ES4304 — Eyes on Earth
 
-[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/earthobservatory/eyes-on-earth-tutorials)
+[![Open in GitHub Codespaces](https://github.com/codespaces/badge.svg)](https://codespaces.new/earthobservatory/eyes-on-earth-tutorials-public)
 
 Course materials for ES4304. The tutorials run in a GitHub Codespace — there is nothing to install on your own machine.
 
