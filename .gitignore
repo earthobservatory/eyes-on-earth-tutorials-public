@@ -65,6 +65,11 @@ materials/
 *.docx
 *.pptx
 ES4304_*.pdf
+# Exception: the Colab guide is committed. Students on Colab never create a
+# Codespace, and they open every notebook straight from the GitHub picker, so
+# the repository is the one place they are already looking. Only the exported
+# PDF - the .docx source and its Word lock file stay out, as above.
+!S02_Using_Google_Colab/ES4304_Using_Google_Colab.pdf
 # Unanchored (no leading path) so these match at any depth. The originals of
 # these are the oversized Word exports, superseded by the re-extracted figures.
 OB_*.png
